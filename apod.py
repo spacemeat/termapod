@@ -1,30 +1,38 @@
+''' Splats the Astronomy Picture of the Day to the terminal. Because what is life 
+without fun?'''
+
 from datetime import date
 from os import makedirs
 from pathlib import Path
 import re
-import requests
 import shutil
 
 from PIL import Image
+import requests
 
 cache_dir = Path.home() / '.config/apod-cache'
 
 def get_image_cache_path():
+    ''' Gets the cached image's local path.'''
     today = date.today()
     image_cache_path = cache_dir / ('image-' + today.strftime('%Y-%m-%d') + '.jpg')
     return image_cache_path
 
 def is_cached():
+    ''' Returns if today's image has been cached.'''
     return get_image_cache_path().exists()
 
 def get_image_and_caption():
+    ''' Returns the APOD image either from cache or the web.'''
     if is_cached():
         im = Image.open(get_image_cache_path())
-        with open(cache_dir / 'caption.txt', 'rt') as f:
+        with open(cache_dir / 'caption.txt', 'rt', encoding='utf-8') as f:
             caption = f.read()
         return (im, caption)
 
-    [f.unlink() for f in cache_dir.glob('*') if f.is_file()]
+    # delete previous APODs
+    for f in (f for f in cache_dir.glob('*') if f.is_file()):
+        f.unlink()
 
     base_url = 'https://apod.nasa.gov/apod/'
     url = base_url + 'astropix.html'
@@ -41,24 +49,26 @@ def get_image_and_caption():
     m = re.search(pat, text, re.S)
     caption = ''
     if m is not None:
-        caption = m[1]
+        caption = m[1].strip()
 
     if not cache_dir.exists():
         makedirs(cache_dir)
     im = Image.open(requests.get(img_url, stream=True).raw)
-    with open(cache_dir / 'caption.txt', 'wt') as f:
+    with open(cache_dir / 'caption.txt', 'wt', encoding='utf-8') as f:
         f.write(caption)
 
     im.save(get_image_cache_path(), 'JPEG')
 
-    return (im, caption.strip())
+    return (im, caption)
 
 def resize_image(txy, im):
+    ''' Resize the image to the available terminal elements, keeping aspect ratio.'''
     cols, rows = txy
     size = cols, rows * 2 - 3
     im.thumbnail(size, Image.Resampling.LANCZOS)
 
 def convert_to_ansi(txy, im, caption):
+    ''' Returns an ANSI-colored ASCII block made from the image and caption.'''
     s = ''
     def fg(rgb):
         return f'\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m'
@@ -79,6 +89,7 @@ def convert_to_ansi(txy, im, caption):
     return f'{s}{" " * offs}{caption}'
 
 def main():
+    ''' Meign.'''
     txy = shutil.get_terminal_size()
     im, caption = get_image_and_caption()
     if im:
