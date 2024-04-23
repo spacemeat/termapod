@@ -56,7 +56,6 @@ def get_image_and_caption():
 def resize_image(txy, im):
     cols, rows = txy
     size = cols, rows * 2 - 3
-    print (f'{cols, rows * 2 - 3}')
     im.thumbnail(size, Image.Resampling.LANCZOS)
 
 def convert_to_ansi(txy, im, caption):
@@ -82,7 +81,6 @@ def convert_to_ansi(txy, im, caption):
 def main():
     txy = shutil.get_terminal_size()
     im, caption = get_image_and_caption()
-    print (caption)
     if im:
         resize_image(txy, im)
         s = convert_to_ansi(txy, im, caption)
