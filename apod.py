@@ -7,7 +7,7 @@ import shutil
 
 from PIL import Image
 
-cache_dir = Path('~/.config/apod-cache')
+cache_dir = Path.home() / '.config/apod-cache'
 
 def get_image_cache_path():
     today = date.today()
@@ -20,9 +20,11 @@ def is_cached():
 def get_image_and_caption():
     if is_cached():
         im = Image.open(get_image_cache_path())
-        with open(get_image_cache_path().parent / 'caption.txt', 'rt') as f:
+        with open(cache_dir / 'caption.txt', 'rt') as f:
             caption = f.read()
         return (im, caption)
+
+    [f.unlink() for f in cache_dir.glob('*') if f.is_file()]
 
     base_url = 'https://apod.nasa.gov/apod/'
     url = base_url + 'astropix.html'
@@ -41,7 +43,6 @@ def get_image_and_caption():
     if m is not None:
         caption = m[1]
 
-    cache_dir = get_image_cache_path().parent
     if not cache_dir.exists():
         makedirs(cache_dir)
     im = Image.open(requests.get(img_url, stream=True).raw)
