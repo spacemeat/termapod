@@ -1,10 +1,29 @@
+from datetime import date
+from os import makedirs
+from pathlib import Path
 import re
 import requests
 import shutil
 
 from PIL import Image
 
-def get_image_url_and_caption():
+cache_dir = Path('~/.config/apod-cache')
+
+def get_image_cache_path():
+    today = date.today()
+    image_cache_path = cache_dir / ('image-' + today.strftime('%Y-%m-%d') + '.jpg')
+    return image_cache_path
+
+def is_cached():
+    return get_image_cache_path().exists()
+
+def get_image_and_caption():
+    if is_cached():
+        im = Image.open(get_image_cache_path())
+        with open(get_image_cache_path().parent / 'caption.txt', 'rt') as f:
+            caption = f.read()
+        return (im, caption)
+
     base_url = 'https://apod.nasa.gov/apod/'
     url = base_url + 'astropix.html'
     resp = requests.get(url)
@@ -15,16 +34,23 @@ def get_image_url_and_caption():
     img_url = ''
     if m is not None:
         img_url = base_url + m[1]
+
     pat = r'<b>(.*?)</b>'
     m = re.search(pat, text, re.S)
     caption = ''
     if m is not None:
         caption = m[1]
-    return (img_url, caption.strip())
 
-def get_image(url):
-    im = Image.open(requests.get(url, stream=True).raw)
-    return im
+    cache_dir = get_image_cache_path().parent
+    if not cache_dir.exists():
+        makedirs(cache_dir)
+    im = Image.open(requests.get(img_url, stream=True).raw)
+    with open(cache_dir / 'caption.txt', 'wt') as f:
+        f.write(caption)
+
+    im.save(get_image_cache_path(), 'JPEG')
+
+    return (im, caption.strip())
 
 def resize_image(txy, im):
     cols, rows = txy
@@ -53,12 +79,10 @@ def convert_to_ansi(txy, im, caption):
     return f'{s}{" " * offs}{caption}'
 
 def main():
-    url, caption = get_image_url_and_caption()
-    print (url)
+    txy = shutil.get_terminal_size()
+    im, caption = get_image_and_caption()
     print (caption)
-    if url:
-        txy = shutil.get_terminal_size()
-        im = get_image(url)
+    if im:
         resize_image(txy, im)
         s = convert_to_ansi(txy, im, caption)
         print (s)
