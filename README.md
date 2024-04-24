@@ -1,2 +1,24 @@
 # apod
-An ascii rendering of the APOD.
+An ASCII-style rendering of the [Astronomy Picture of the Day](https://apod.nasa.gov/apod/astropix.html) at nasa.gov. This retrieves the picture of the day, downsamples it to the size of your terminal window, and displays it in ASCII-style Unicode blocks with ANSI 24-bit color codes. I like it as a splash screen for a new terminal window.
+
+Enjoy it. It's fun. Tested in POP!_OS 22.04. Written in python 3.10.
+
+## Installation
+
+<!-- pip install apod -->
+
+Currently, clone this repository, `cd` into it, and install with:
+
+```
+$ python3 -m pip install -e .
+```
+
+## Running it
+
+It should install as a runnable program.
+
+```
+$ apod
+```
+
+Unless `--no-save-cache` is passed as an argument, the image is downloaded to `~/.config/apod/image-<date>.jpg`, with caption saved to `~/.config/apod/caption.txt`. This cache image is used unless `--no-cache` is given as an argument. Whenever a new image is cached, the previous image and caption are deleted, so as not to fill up your precious storage.

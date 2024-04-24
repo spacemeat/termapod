@@ -6,11 +6,12 @@ from os import makedirs
 from pathlib import Path
 import re
 import shutil
+import sys
 
 from PIL import Image
 import requests
 
-cache_dir = Path.home() / '.config/apod-cache'
+cache_dir = Path.home() / '.config/apod'
 
 def get_image_cache_path():
     ''' Gets the cached image's local path.'''
@@ -24,15 +25,11 @@ def is_cached():
 
 def get_image_and_caption():
     ''' Returns the APOD image either from cache or the web.'''
-    if is_cached():
+    if is_cached() and '--no-cache' not in sys.argv:
         im = Image.open(get_image_cache_path())
         with open(cache_dir / 'caption.txt', 'rt', encoding='utf-8') as f:
             caption = f.read()
         return (im, caption)
-
-    # delete previous APODs
-    for f in (f for f in cache_dir.glob('*') if f.is_file()):
-        f.unlink()
 
     base_url = 'https://apod.nasa.gov/apod/'
     url = base_url + 'astropix.html'
@@ -51,13 +48,19 @@ def get_image_and_caption():
     if m is not None:
         caption = m[1].strip()
 
-    if not cache_dir.exists():
-        makedirs(cache_dir)
     im = Image.open(requests.get(img_url, stream=True).raw)
-    with open(cache_dir / 'caption.txt', 'wt', encoding='utf-8') as f:
-        f.write(caption)
 
-    im.save(get_image_cache_path(), 'JPEG')
+    if '--no-save-cache' not in sys.argv:
+        # delete previous APODs
+        for f in (f for f in cache_dir.glob('*') if f.is_file()):
+            f.unlink()
+
+        if not cache_dir.exists():
+            makedirs(cache_dir)
+        with open(cache_dir / 'caption.txt', 'wt', encoding='utf-8') as f:
+            f.write(caption)
+
+        im.save(get_image_cache_path(), 'JPEG')
 
     return (im, caption)
 
