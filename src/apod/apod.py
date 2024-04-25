@@ -11,6 +11,8 @@ import sys
 from PIL import Image
 import requests
 
+from . import __version__
+
 cache_dir = Path.home() / '.config/apod'
 
 def get_image_cache_path():
@@ -93,6 +95,10 @@ def convert_to_ansi(txy, im, caption):
 
 def main():
     ''' Meign.'''
+    if len(sys.argv) > 1 and sys.argv[1] in ['-v', '--version']:
+        print (f'apod version {__version__}')
+        return
+
     txy = shutil.get_terminal_size()
     im, caption = get_image_and_caption()
     if im:

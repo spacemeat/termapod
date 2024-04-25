@@ -5,11 +5,17 @@ Enjoy it. It's fun. Tested in POP!_OS 22.04. Written in python 3.10.
 
 ## Installation
 
-<!-- pip install apod -->
-
-Currently, clone this repository, `cd` into it, and install with:
+It's a python package:
 
 ```
+$ python3 -m pip install apod
+```
+
+Or, install from a local clone of the repo:
+
+```
+$ git clone https://github.com/spacemeat/apod
+$ cd apod
 $ python3 -m pip install -e .
 ```
 
