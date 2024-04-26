@@ -34,7 +34,7 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/spacemeat/apod.git"
+Repository = "https://github.com/spacemeat/apod"
 
 [project.scripts]
 apod="apod.apod:main"
