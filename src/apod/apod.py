@@ -54,7 +54,7 @@ def get_image_and_caption():
 
     if '--no-save-cache' not in sys.argv:
         # delete previous APODs
-        for f in (f for f in cache_dir.glob('*') if f.is_file()):
+        for f in (f for f in cache_dir.glob('*.jpg') if f.is_file()):
             f.unlink()
 
         if not cache_dir.exists():
@@ -79,6 +79,7 @@ def convert_to_ansi(txy, im, caption):
         return f'\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m'
     def bg(rgb):
         return f'\033[48;2;{rgb[0]};{rgb[1]};{rgb[2]}m'
+
     data = list(im.getdata())
     ch = '▀'
     w = im.width
@@ -87,7 +88,7 @@ def convert_to_ansi(txy, im, caption):
         s += f'\033[0m\n{" " * offs}'
         for x in range(0, im.width):
             top_addr = y * w + x
-            bot_addr = (y + 1) * w + x
+            bot_addr = top_addr + w
             s += f'{fg(data[top_addr])}{bg(data[bot_addr])}{ch}'
     s += '\033[0m\n'
     offs = int((txy[0] - len(caption)) / 2)

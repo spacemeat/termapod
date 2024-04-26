@@ -16,7 +16,7 @@ Or, install from a local clone of the repo:
 ```
 $ git clone https://github.com/spacemeat/apod
 $ cd apod
-$ python3 -m pip install -e .
+$ python3 -m pip install .
 ```
 
 ## Running it
