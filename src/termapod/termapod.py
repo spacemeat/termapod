@@ -13,7 +13,7 @@ import requests
 
 from . import __version__
 
-cache_dir = Path.home() / '.config/apod'
+cache_dir = Path.home() / '.config/termapod'
 
 def get_image_cache_path():
     ''' Gets the cached image's local path.'''
@@ -97,7 +97,7 @@ def convert_to_ansi(txy, im, caption):
 def main():
     ''' Meign.'''
     if len(sys.argv) > 1 and sys.argv[1] in ['-v', '--version']:
-        print (f'apod version {__version__}')
+        print (f'termapod version {__version__}')
         return
 
     txy = shutil.get_terminal_size()

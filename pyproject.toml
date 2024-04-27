@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "apod"
+name = "termapod"
 dynamic = ["version"]
 dependencies = [
 	"pillow==10.3.0",
@@ -34,13 +34,13 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/spacemeat/apod"
+Repository = "https://github.com/spacemeat/termapod"
 
 [project.scripts]
-apod="apod.apod:main"
+termapod="termapod.termapod:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools_scm]
-write_to = 'src/apod/_version.py'
+write_to = 'src/termapod/_version.py'

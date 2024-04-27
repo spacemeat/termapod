@@ -8,14 +8,14 @@ Enjoy it. It's fun. Tested in POP!_OS 22.04. Written in python 3.10.
 It's a python package:
 
 ```
-$ python3 -m pip install apod
+$ python3 -m pip install termapod
 ```
 
 Or, install from a local clone of the repo:
 
 ```
-$ git clone https://github.com/spacemeat/apod
-$ cd apod
+$ git clone https://github.com/spacemeat/termapod
+$ cd termapod
 $ python3 -m pip install .
 ```
 
@@ -24,7 +24,7 @@ $ python3 -m pip install .
 It should install as a runnable program.
 
 ```
-$ apod
+$ termapod
 ```
 
-Unless `--no-save-cache` is passed as an argument, the image is downloaded to `~/.config/apod/image-<date>.jpg`, with caption saved to `~/.config/apod/caption.txt`. This cache image is used unless `--no-cache` is given as an argument. Whenever a new image is cached, the previous image and caption are deleted, so as not to fill up your precious storage.
+Unless `--no-save-cache` is passed as an argument, the image is downloaded to `~/.config/termapod/image-<date>.jpg`, with caption saved to `~/.config/termapod/caption.txt`. This cache image is used unless `--no-cache` is given as an argument. Whenever a new image is cached, the previous image and caption are deleted, so as not to fill up your precious storage.
