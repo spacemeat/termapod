@@ -2,7 +2,7 @@
 without fun?'''
 
 from datetime import date
-from os import makedirs
+from os import makedirs, terminal_size
 from pathlib import Path
 import re
 import shutil
@@ -15,17 +15,17 @@ from . import __version__
 
 cache_dir = Path.home() / '.config/termapod'
 
-def get_image_cache_path():
+def get_image_cache_path() -> Path:
     ''' Gets the cached image's local path.'''
     today = date.today()
     image_cache_path = cache_dir / ('image-' + today.strftime('%Y-%m-%d') + '.jpg')
     return image_cache_path
 
-def is_cached():
+def is_cached() -> bool:
     ''' Returns if today's image has been cached.'''
     return get_image_cache_path().exists()
 
-def get_image_and_caption():
+def get_image_and_caption() -> tuple[Image, str]:
     ''' Returns the APOD image either from cache or the web.'''
     if is_cached() and '--no-cache' not in sys.argv:
         im = Image.open(get_image_cache_path())
@@ -66,13 +66,14 @@ def get_image_and_caption():
 
     return (im, caption)
 
-def resize_image(txy, im):
-    ''' Resize the image to the available terminal elements, keeping aspect ratio.'''
+def resize_image(txy: terminal_size, im: Image) -> None:
+    ''' Resize the image (in place) to the available terminal elements, keeping
+    the aspect ratio.'''
     cols, rows = txy
     size = cols, rows * 2 - 3
     im.thumbnail(size, Image.Resampling.LANCZOS)
 
-def convert_to_ansi(txy, im, caption):
+def convert_to_ansi(txy: terminal_size, im: Image, caption: str) -> str:
     ''' Returns an ANSI-colored ASCII block made from the image and caption.'''
     s = ''
     def fg(rgb):

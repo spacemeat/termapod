@@ -1,4 +1,4 @@
-# apod
+# termapod
 An ASCII-style rendering of the [Astronomy Picture of the Day](https://apod.nasa.gov/apod/astropix.html) at nasa.gov. This retrieves the picture of the day, downsamples it to the size of your terminal window, and displays it in ASCII-style Unicode blocks with ANSI 24-bit color codes. I like it as a splash screen for a new terminal window.
 
 Enjoy it. It's fun. Tested in POP!_OS 22.04. Written in python 3.10.
