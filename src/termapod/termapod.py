@@ -13,6 +13,9 @@ import requests
 
 from . import __version__
 
+class ApodScrapingError(Exception):
+    pass
+
 cache_dir = Path.home() / '.config/termapod'
 
 def get_image_cache_path() -> Path:
@@ -25,7 +28,7 @@ def is_cached() -> bool:
     ''' Returns if today's image has been cached.'''
     return get_image_cache_path().exists()
 
-def get_image_and_caption() -> tuple[Image, str]:
+def get_image_and_caption() -> tuple[Image.Image | None, str]:
     ''' Returns the APOD image either from cache or the web.'''
     if is_cached() and '--no-cache' not in sys.argv:
         im = Image.open(get_image_cache_path())
@@ -43,10 +46,14 @@ def get_image_and_caption() -> tuple[Image, str]:
     img_url = ''
     if m is not None:
         img_url = base_url + m[1]
+    else:
+        raise ApodScrapingError("URL scraping failed to turn up an image source. Maybe it's a "
+            "video today?")
 
     pat = r'<b>(.*?)</b>'
     m = re.search(pat, text, re.S)
     caption = ''
+    print (f'URL: {m}')
     if m is not None:
         caption = m[1].strip()
 
@@ -66,14 +73,14 @@ def get_image_and_caption() -> tuple[Image, str]:
 
     return (im, caption)
 
-def resize_image(txy: terminal_size, im: Image) -> None:
+def resize_image(txy: terminal_size, im: Image.Image) -> None:
     ''' Resize the image (in place) to the available terminal elements, keeping
     the aspect ratio.'''
     cols, rows = txy
     size = cols, rows * 2 - 3
     im.thumbnail(size, Image.Resampling.LANCZOS)
 
-def convert_to_ansi(txy: terminal_size, im: Image, caption: str) -> str:
+def convert_to_ansi(txy: terminal_size, im: Image.Image, caption: str) -> str:
     ''' Returns an ANSI-colored ASCII block made from the image and caption.'''
     s = ''
     def fg(rgb):
@@ -102,11 +109,15 @@ def main():
         return
 
     txy = shutil.get_terminal_size()
-    im, caption = get_image_and_caption()
-    if im:
-        resize_image(txy, im)
-        s = convert_to_ansi(txy, im, caption)
-        print (s)
+    try:
+        im, caption = get_image_and_caption()
+        if im:
+            resize_image(txy, im)
+            s = convert_to_ansi(txy, im, caption)
+            print (s)
+
+    except ApodScrapingError as e:
+        print (e)
 
 if __name__ == "__main__":
     main()
