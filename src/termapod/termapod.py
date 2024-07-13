@@ -53,7 +53,6 @@ def get_image_and_caption() -> tuple[Image.Image | None, str]:
     pat = r'<b>(.*?)</b>'
     m = re.search(pat, text, re.S)
     caption = ''
-    print (f'URL: {m}')
     if m is not None:
         caption = m[1].strip()
 
