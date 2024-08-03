@@ -68,6 +68,7 @@ def get_image_and_caption() -> tuple[Image.Image | None, str]:
         with open(cache_dir / 'caption.txt', 'wt', encoding='utf-8') as f:
             f.write(caption)
 
+        im = im.convert('RGB')
         im.save(get_image_cache_path(), 'JPEG')
 
     return (im, caption)
